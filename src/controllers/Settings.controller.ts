@@ -6,12 +6,12 @@ import mongoose from 'mongoose';
 
 export const GetSettingsByUserId = async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const userSettings = await Settings.findOne({ user: new mongoose.Types.ObjectId(req.user['id']) })
+        const userSettings = await Settings.findOne({ user: new mongoose.Types.ObjectId(req.user['_id']) })
             .select('-_id -createdAt -__v -updatedAt -user')
 
 
         if(!userSettings){
-            return new ApiResponse(404, 'Settings not found!', {})
+            return new ApiResponse(404, 'Settings not found!', {}).send(res);
         }
 
         return new ApiResponse(200, 'Settings found successfully', {
@@ -30,7 +30,7 @@ export const UpsertUserSettings = async (req: Request, res: Response, next: Next
   session.startTransaction()  
   
   try {
-      const userId = req.user['id']; // Assuming you have middleware to get the current user from the request
+      const userId = req.user['_id']; // Assuming you have middleware to get the current user from the request
       
       const { pomodoroWorkTime, pomodoroShortBreakTime, pomodoroLongBreakTime, pomodoroIntervalCount } = req.body;
   

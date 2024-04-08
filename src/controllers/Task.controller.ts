@@ -11,30 +11,22 @@ export const CreateTask = async (req: Request, res: Response, next: NextFunction
 
         console.log(taskData);
 
-        const userId = req.user['id'];
+        const userId = req.user['_id'];
 
-        const newCategory = await new Category({
-            user: userId,
-            name: taskData.category,
-            description: ''
-        })
+        const exisitingCategory = await Category.findOne({ name: taskData.category.toLowerCase(), user: userId })
 
-        if(!newCategory){
-            return new ApiResponse(400, 'Something went wrong creating category', {}).send(res) 
-        }
+        let newCategory = null;
 
-        const newTimer = await new Task({
-            type: taskData.timer === 'pomodoro' ? TimerTypes.POMODORO 
-            : taskData.timer === 'task-based' ? TimerTypes.TASK 
-            : TimerTypes.INFINITE,
-            isStarted: false,
-            isPaused: false
-        })
-        
-        console.log({newTimer});
-
-        if(!newTimer){
-            return new ApiResponse(400, 'Something went wrong creating timer', {}).send(res) 
+        if(!exisitingCategory){
+            newCategory = await Category.create({
+                user: userId,
+                name: taskData.category.toLowerCase(),
+                description: ''
+            })
+    
+            if(!newCategory){
+                return new ApiResponse(400, 'Something went wrong creating category', {}).send(res) 
+            }
         }
 
         let subtasksIds = []
@@ -61,13 +53,13 @@ export const CreateTask = async (req: Request, res: Response, next: NextFunction
                 title: taskData.title,
                 description: taskData.description,
                 priority: taskData.priority,
-                category: newCategory._id,
+                category: exisitingCategory ? exisitingCategory._id : newCategory._id,
                 isCompleted: taskData.isCompleted,
                 startDate: taskData.startDate,
                 dueDate: taskData.dueDate,
                 estimatedTime: taskData.estimatedTime,
                 notes: taskData.notes,
-                timer: newTimer._id,
+                timer: taskData.timer,
                 subtasks: subtasksIds
         })
         
@@ -87,7 +79,6 @@ export const CreateTask = async (req: Request, res: Response, next: NextFunction
 
         return new ApiResponse(200, 'Task created successfully', {data: newTask}).send(res);
     }catch(error){
-        log.error(error);
         next(error);
     }
 }
@@ -96,7 +87,7 @@ export const UpdateTask = async (req: Request, res: Response, next: NextFunction
     try{
         const taskId = req.params.id; // Assuming the task ID is passed as a route parameter
         const taskData = req.body;
-        const userId = req.user['id']; // Assuming you have middleware to get the current user from the request
+        const userId = req.user['_id']; // Assuming you have middleware to get the current user from the request
 
         // Find the task by ID and user ID
         const task = await Task.findOne({ _id: taskId, user: userId });
@@ -138,7 +129,7 @@ export const GetTaskById = async (req: Request, res: Response, next: NextFunctio
 
 export const GetAllTasksByUser = async (req: Request, res: Response, next: NextFunction) => {
     try{
-        const userId = req.user['id']; // Assuming you have middleware to get the current user from the request
+        const userId = req.user['_id']; // Assuming you have middleware to get the current user from the request
 
         // Find all tasks belonging to the user
         const tasks = await Task.find({ user: userId });

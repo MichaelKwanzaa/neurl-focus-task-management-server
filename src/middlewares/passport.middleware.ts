@@ -33,7 +33,7 @@ export default function setupPassport(): void {
     callbackURL: process.env.CLIENT_REDIRECT_URI,
   }, async (accessToken, refreshToken, profile, done) => {
     try {
-      var randomstring = Math.random().toString(36).slice(-8);
+      let randomstring = Math.random().toString(36).slice(-8);
 
       const salt = await bcrypt.genSalt(parseInt(process.env.SALTWORKFACTOR))
   

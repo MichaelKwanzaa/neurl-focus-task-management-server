@@ -4,7 +4,7 @@ import { ApiResponse } from '../utils/ApiResponse.util';
 
 export const GetUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userId = req.user['id'];
+        const userId = req.user['_id'];
         const user = await User.findById(userId)
             .select('-_id -createdAt -updatedAt -__v -password')
             .populate({
@@ -13,7 +13,7 @@ export const GetUser = async (req: Request, res: Response, next: NextFunction) =
             })
             .populate({
                 path: 'tasks',
-                select: '-_id -createdAt -updatedAt -__v',
+                select: '-_id -createdAt -updatedAt -__v -user',
                 populate: [
                     {
                         path: 'category',

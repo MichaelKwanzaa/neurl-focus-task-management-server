@@ -23,4 +23,4 @@ const SubtaskSchema = new Schema<SubtaskDocument>({
 
 const Subtask = mongoose.model<SubtaskDocument>('subtask', SubtaskSchema)
 
-export { Subtask }
+export { Subtask } 

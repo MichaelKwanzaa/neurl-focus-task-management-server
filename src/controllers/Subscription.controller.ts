@@ -12,7 +12,7 @@ export const SubscribeUser = async (req: Request, res: Response, next: NextFunct
 
     const flw = new Flutterwave(process.env.FLUTTERWAVEPUBLICKEY, process.env.FLUTTERWAVEPRIVATEKEY);
 
-    const userId = req.user['id'];
+    const userId = req.user['_id'];
 
     const user = await User.findById(userId);
 
