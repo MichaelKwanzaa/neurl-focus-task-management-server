@@ -13,7 +13,7 @@ export const GetUser = async (req: Request, res: Response, next: NextFunction) =
             })
             .populate({
                 path: 'tasks',
-                select: '-_id -createdAt -updatedAt -__v -user',
+                select: '-createdAt -updatedAt -__v -user',
                 populate: [
                     {
                         path: 'category',

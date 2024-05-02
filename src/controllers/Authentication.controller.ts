@@ -23,11 +23,9 @@ export const RegisterUser = async (req: Request, res: Response, next: NextFuncti
     try{
         const { name, email, password } = req.body;
 
-        let randomstring = Math.random().toString(36).slice(-8);
-
         const salt = await bcrypt.genSalt(parseInt(process.env.SALTWORKFACTOR))
     
-        const hash = await bcrypt.hashSync(randomstring, salt)
+        const hash = await bcrypt.hash(password, salt)
 
         const user = await User.findOneAndUpdate(
             { email: email },
@@ -43,6 +41,8 @@ export const RegisterUser = async (req: Request, res: Response, next: NextFuncti
             },
             { upsert: true, new: true }
         )
+
+        console.log({user});
 
         if(!user){
             return new ApiResponse(500, 'Something went wrong registering this user', {}).send(res);
@@ -77,9 +77,9 @@ export const LoginUser = async (req: Request, res: Response, next: NextFunction)
 
         res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
         
-
+        return new ApiResponse(200, 'Successfully logged in', { accessToken, refreshToken }).send(res);
     } catch(error) {
-
+        console.log(error);
     }
 }
 

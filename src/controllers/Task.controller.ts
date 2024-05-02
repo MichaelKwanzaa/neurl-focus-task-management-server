@@ -17,6 +17,7 @@ export const CreateTask = async (req: Request, res: Response, next: NextFunction
 
         let newCategory = null;
 
+        /**@todo - add some sort of logic to description to add it */
         if(!exisitingCategory){
             newCategory = await Category.create({
                 user: userId,
