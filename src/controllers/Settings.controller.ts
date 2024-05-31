@@ -3,6 +3,7 @@ import { Settings, User } from '../models'
 import { ApiResponse } from '../utils/ApiResponse.util';
 import log from '../utils/Logger.util';
 import mongoose from 'mongoose';
+import redisClient from '../config/redis';
 
 export const GetSettingsByUserId = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -70,6 +71,8 @@ export const UpsertUserSettings = async (req: Request, res: Response, next: Next
       user['settings'] = settings['_id'];
 
       await user.save()
+
+      await redisClient.del(`user:${userId}`);
   
       return new ApiResponse(200, 'Settings updated successfully', {}).send(res)
     } catch (error) {

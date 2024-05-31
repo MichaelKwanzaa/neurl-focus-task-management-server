@@ -10,8 +10,6 @@ import https from 'https';
 export const SubscribeUser = async (req: Request, res: Response, next: NextFunction) => {
    
     try{
-    const paystack = require("paystack-api")(process.env.PAYSTACKPRIVATEKEY);
-
     const { plan, billingFrequency } = req.body;
 
     const userId = req.user['_id'];
@@ -86,11 +84,15 @@ export const SubscribeUser = async (req: Request, res: Response, next: NextFunct
         status: 'pending',
         metadata: { 
             tx_ref,
-
          },
-      });
+    });
 
-      await subscription.save();
+    
+    await subscription.save();
+
+    user.subscriptions.push(subscription._id);
+
+    user.save();
 
     return new ApiResponse(200, 'Redirecting to payment gateway!', {
         data: authUrl

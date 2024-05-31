@@ -43,6 +43,7 @@
     "passport-oauth2": "^1.8.0",
     "paystack-api": "^2.0.6",
     "pino": "^8.19.0",
+    "redis": "^4.6.13",
     "ts-node": "^10.9.2",
     "uuid": "^9.0.1"
   }

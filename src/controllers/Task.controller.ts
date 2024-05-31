@@ -4,6 +4,7 @@ import { Category, Task, TimerTypes, User } from '../models';
 import log from '../utils/Logger.util';
 import mongoose from 'mongoose';
 import { Subtask } from '../models/Subtask.model';
+import redisClient from '../config/redis';
 
 export const CreateTask = async (req: Request, res: Response, next: NextFunction) => {
     try{
@@ -77,6 +78,9 @@ export const CreateTask = async (req: Request, res: Response, next: NextFunction
         user.tasks.push(newTask._id);
  
         user.save();
+
+        // Invalidate the cached user data in Redis
+        await redisClient.del(`user:${userId}`);
 
         return new ApiResponse(200, 'Task created successfully', {data: newTask}).send(res);
     }catch(error){
